@@ -9,12 +9,6 @@ public class Conversion {
     private float GradosCelcius;
     private float GradosFahrenheit;
 
-    public Conversion(String fecha, float gradosCelcius, float gradosFahrenheit) {
-        Fecha = fecha;
-        GradosCelcius = gradosCelcius;
-        GradosFahrenheit = gradosFahrenheit;
-    }
-
     public Conversion() {
         Fecha = "";
         GradosCelcius = 0;

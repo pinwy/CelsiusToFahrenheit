@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CelsiusToFahrenheit</string>
+    <string name="formato_fecha">yyyy-MM-dd HH:mm:ss</string>
+    <string name="add_respuesta">º F</string>
 </resources>
