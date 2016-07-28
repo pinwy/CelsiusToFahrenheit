@@ -2,4 +2,8 @@
     <string name="app_name">CelsiusToFahrenheit</string>
     <string name="formato_fecha">yyyy-MM-dd HH:mm:ss</string>
     <string name="add_respuesta">º F</string>
+    <string name="error_consumo">Error en el consumo</string>
+    <string name="error_guardarBaseDatos">"Error al guardarBaseDatos "</string>
+    <string name="mensaje_sin_internet">No hay conextividad de internet</string>
+    <string name="campo_requerido">Teclee un valor</string>
 </resources>

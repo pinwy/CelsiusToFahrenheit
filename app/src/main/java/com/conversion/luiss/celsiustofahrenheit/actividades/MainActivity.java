@@ -31,7 +31,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements Validator.ValidationListener {
 
     //Variables Globales
-    @NotEmpty(message = "El es requerido")
+    @NotEmpty(message = "Es requerido")
     EditText txtGradosCelcius;
     Button btnConvertir;
     TextView lblResultado;
@@ -85,7 +85,9 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
         baseDatos = bd.abrirBaseDatos(this, TAG);
     }
 
-
+    /**
+     * Clase de tarea asincrona para el consumo del webservice
+     */
     private class ATConvertirGrados extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -114,28 +116,29 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
                 lblResultado.setText(sGradosRespuesta + getString(R.string.add_respuesta));
             }else{
                 //Error en el consumo
-                Log.i(TAG, "Error en el consumo");
+                Log.i(TAG, getString(R.string.error_consumo));
             }
         }
-
-        @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "onPreExecute");
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            Log.i(TAG, "onProgressUpdate");
-        }
-
     }
 
-    private double validarRespuesta(double d)
+    /**
+     * Método que valida la respuesta obtenida por le webservice, tiene como funcion darle formato a
+     * un double, en caso que contenga mas de 2 deciamles los truncará a 2 decimales
+     * @param dValor valor double a formatear
+     * @return regresa un valor doble ya formateado a 2 caracteres
+     */
+    private double validarRespuesta(double dValor)
     {
         DecimalFormat twoDForm = new DecimalFormat("#.##");
-        return Double.valueOf(twoDForm.format(d));
+        return Double.valueOf(twoDForm.format(dValor));
     }
 
+    /**
+     * Método que inserta en la base de datos los grados que se convirtieron así como la respuesta
+     * @param fGradosCelcius recibe los grados celcius que se mandaron a convertir
+     * @param fGradosFahrenheit recibe los grados fahrenheit que es obtienen como respueta del WS
+     * @return
+     */
     private boolean guardarBaseDatos(float fGradosCelcius, float fGradosFahrenheit){
         boolean bRespuesta = false;
 
@@ -160,12 +163,17 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
 
             }
         }catch (Exception e){
-            Log.e(TAG,"Error al guardarBaseDatos " + e);
+            Log.e(TAG,getString(R.string.error_guardarBaseDatos) + e);
         }
 
         return bRespuesta;
     }
 
+    /**
+     * Método que se encarga de recorrer la lista de Conversiones en la cual se tienen los registros de la base de datos
+     * estos son previamente llenados
+     * @param list Recibe una lista con todos los registros de la base de dato
+     */
     private void mostrarDatosBD(ArrayList<Conversion> list){
 
         int iTam = list.size();
@@ -193,11 +201,11 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(txtGradosCelcius.getWindowToken(), 0);
             }else{
-                gn.ponerMensaje(_this,"No hay conextividad de internet",Constantes.DURACION_MENSAJE_LARGO);
+                gn.ponerMensaje(_this,getString(R.string.mensaje_sin_internet),Constantes.DURACION_MENSAJE_LARGO);
             }
 
         }else{
-            Toast.makeText(_this,"Teclee un valor",Toast.LENGTH_SHORT).show();
+            Toast.makeText(_this, R.string.campo_requerido,Toast.LENGTH_SHORT).show();
         }
     }
 

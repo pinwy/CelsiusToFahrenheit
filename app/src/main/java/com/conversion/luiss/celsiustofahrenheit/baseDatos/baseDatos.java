@@ -24,8 +24,12 @@ public class baseDatos {
             + " fecha TEXT,gradosCelcius REAL, gradosFahrenheit REAL);";
 
 
-    // Procedimiento para abrir la base de datos
-    // si no existe se creará, también se creará la tabla focos
+    /**
+     * Método que abre la base de datos y crea la tabla que se necesita
+     * @param context recibe el contexto que de la actividad que lo necesita
+     * @param TAG Recibe le tag de la clase que lo manda llamar
+     * @return regresa un objeto de tipo SQLiteDatabase ya abierto
+     */
     public SQLiteDatabase abrirBaseDatos(Context context, String TAG) {
 
         SQLiteDatabase baseDatos = null;
@@ -42,6 +46,11 @@ public class baseDatos {
         return baseDatos;
     }
 
+    /**
+     * Método que obtiene todos los registros de la base de datos
+     * @param baseDatos Regresa una lista de Conversiones para que sea utilizada en la activdad
+     * @return
+     */
     public ArrayList<Conversion> obtenerListConversiones(SQLiteDatabase baseDatos)
     {
         int idTarea = 0;
@@ -75,6 +84,12 @@ public class baseDatos {
         return listConversiones;
     }
 
+    /**
+     * Método que inserta las conversiones
+     * @param baseDatos Recibe un objeto de base de datos previamente abierto
+     * @param conversion Recibe un objeto de tipo conversion
+     * @return regresa true si se insertó correctamente
+     */
     public boolean insertarConversion(SQLiteDatabase baseDatos, Conversion conversion) {
 
         boolean bRespuesta = false;
