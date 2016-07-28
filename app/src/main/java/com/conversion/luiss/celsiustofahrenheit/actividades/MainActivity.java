@@ -18,15 +18,20 @@ import com.conversion.luiss.celsiustofahrenheit.Util.Constantes;
 import com.conversion.luiss.celsiustofahrenheit.Util.general;
 import com.conversion.luiss.celsiustofahrenheit.baseDatos.baseDatos;
 import com.conversion.luiss.celsiustofahrenheit.modelo.Conversion;
+import com.mobsandgeeks.saripaar.ValidationError;
+import com.mobsandgeeks.saripaar.Validator;
+import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Validator.ValidationListener {
 
     //Variables Globales
+    @NotEmpty(message = "El es requerido")
     EditText txtGradosCelcius;
     Button btnConvertir;
     TextView lblResultado;
@@ -41,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
     //Se crea un conexto general para toda la pantalla para evitar estar obtenniendolo cada vez que se necesite
     Context _this;
+
+    //Validaciones con Saripaar
+    Validator validator;
 
     private static final String TAG = "MainActivity";
 
@@ -62,26 +70,14 @@ public class MainActivity extends AppCompatActivity {
         bd = new baseDatos();
         _this = getApplicationContext();
 
+        validator = new Validator(this);
+        validator.setValidationListener(this);
+
         btnConvertir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String sGrados = txtGradosCelcius.getText().toString();
-                if(!sGrados.equals("")){
-                    if(gn.isOnline(_this)){
-                        aTConvertirGrados = new ATConvertirGrados();
-                        aTConvertirGrados.execute(txtGradosCelcius.getText().toString());
-                        //ocultar el teclado
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(txtGradosCelcius.getWindowToken(), 0);
-                    }else{
-                        gn.ponerMensaje(_this,"No hay conextividad de internet",Constantes.DURACION_MENSAJE_LARGO);
-                    }
-
-                }else{
-                    Toast.makeText(_this,"Teclee un valor",Toast.LENGTH_SHORT).show();
-                }
-
+                validator.validate();
             }
         });
 
@@ -180,5 +176,50 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    /**
+     * Método utilizado por la libreria saripaar, el cual es llamado siempre y cuando se cumplan
+     * todas las validaciones que se definieron para todos los controles
+     * */
+    @Override
+    public void onValidationSucceeded() {
+        String sGrados = txtGradosCelcius.getText().toString();
+        if(!sGrados.equals("")){
+            if(gn.isOnline(_this)){
+                aTConvertirGrados = new ATConvertirGrados();
+                aTConvertirGrados.execute(txtGradosCelcius.getText().toString());
+                //ocultar el teclado
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(txtGradosCelcius.getWindowToken(), 0);
+            }else{
+                gn.ponerMensaje(_this,"No hay conextividad de internet",Constantes.DURACION_MENSAJE_LARGO);
+            }
+
+        }else{
+            Toast.makeText(_this,"Teclee un valor",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     *Método utilizado por la libreria saripaar, el cual es llamado cuando alguna valicaion de
+     * controles no se cumple
+     * */
+    @Override
+    public void onValidationFailed(List<ValidationError> errors) {
+        for (ValidationError error : errors)
+        {
+            View view = error.getView();
+            String message = error.getCollatedErrorMessage(this);
+
+            if (view instanceof EditText) {
+                view.requestFocus();
+                ((EditText) view).setError(message);
+            }
+            else
+            {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
